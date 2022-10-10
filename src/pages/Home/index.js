@@ -1,4 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react';
+import { Alert } from 'react-native';
 import {
   Background,
   Container,
@@ -35,7 +36,8 @@ export default function Home() {
               key: childItem.key,
               description: childItem.val().description,
               type: childItem.val().type,
-              value: childItem.val().value
+              value: childItem.val().value,
+              date: childItem.val().date
             };
 
             setMovements(oldArray => [...oldArray, list].reverse());
@@ -46,6 +48,35 @@ export default function Home() {
     loadList()
   }, []);
 
+  function handleDelete(data) {
+    Alert.alert(
+      'Cuidado!',
+      `Você deseja excluir ${data.description}?`,
+      [
+        {
+          text: 'Cancelar',
+          style: 'cancel'
+        },
+        {
+          text: 'Continuar',
+          onPress: () => handleDeleteSuccess(data)
+        }
+      ]
+    )
+  }
+
+  async function handleDeleteSuccess(data) {
+    await firebase.database().ref('movements')
+      .child(uid).child(data.key).remove()
+      .then(async () => {
+        let currentBalance = balance;
+        data.type === 'despesa' ? currentBalance += parseFloat(data.value) : currentBalance -= parseFloat(data.value);
+        await firebase.database().ref('users').child(uid).child('balance').set(currentBalance);
+      })
+      .catch((error) => {
+        console.log(error);
+      })
+  }
 
   return (
     <Background>
@@ -61,7 +92,7 @@ export default function Home() {
         showsVerticalScrollIndicator={false}
         data={movements}
         keyExtractor={item => item.key}
-        renderItem={({item}) => <MovementsList data={item} />}
+        renderItem={({item}) => <MovementsList data={item} deleteItem={handleDelete} />}
       />
     </Background>
   );
