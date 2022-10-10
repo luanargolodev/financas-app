@@ -29,3 +29,8 @@ export const ValueText = styled.Text`
   font-size: 22px;
   font-weight: bold;
 `;
+
+export const DescriptionText = styled.Text`
+  color: #222;
+  font-size: 16px;
+`;

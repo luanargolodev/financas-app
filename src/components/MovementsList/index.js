@@ -4,7 +4,8 @@ import {
   Type,
   IconView,
   TypeText,
-  ValueText
+  ValueText,
+  DescriptionText
 } from './styles';
 import Icon from 'react-native-vector-icons/Feather';
 
@@ -24,6 +25,9 @@ export default function MovementsList({data}) {
       <ValueText>
         R$ {data.value}
       </ValueText>
+      <DescriptionText>
+        {data.description}
+      </DescriptionText>
     </Container>
   );
 }
